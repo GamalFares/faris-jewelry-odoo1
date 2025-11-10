@@ -1,37 +1,15 @@
 #!/bin/bash
 set -o errexit
 
-echo "=== Setting up Odoo 18 with Python $(python --version) ==="
+echo "=== Setting up Odoo 18 ==="
 
-# Install compatible dependencies
-pip install --upgrade pip setuptools wheel
-
-# Install base dependencies first
-pip install psycopg2-binary
-pip install Pillow
-pip install lxml
-pip install Jinja2
-pip install reportlab
-pip install python-dateutil
-pip install pytz
-pip install Babel
-pip install Werkzeug
-pip install passlib
-pip install requests
-pip install XlsxWriter
-pip install num2words
-pip install vobject
-pip install pyparsing
-pip install polib
-pip install pyserial
-pip install ofxparse
-pip install qrcode
-pip install xlrd
-pip install xlwt
+# Install dependencies
+pip install --upgrade pip
+pip install -r requirements.txt
 
 # Create directory structure
-mkdir -p src
-cd src
+mkdir -p odoo-source
+cd odoo-source
 
 # Download Odoo 18 source code
 if [ ! -f "odoo-bin" ]; then
@@ -42,11 +20,16 @@ if [ ! -f "odoo-bin" ]; then
     rm -rf odoo-18.0 odoo-18.0.zip
 fi
 
-# Create custom addons directory
-mkdir -p addons
+# Create custom addons directory in the root
+cd ..
+mkdir -p custom-addons
 
 # Create data directory
 mkdir -p /tmp/odoo-data
 chmod -R 755 /tmp/odoo-data
 
 echo "=== Odoo 18 setup completed ==="
+echo "Current directory structure:"
+ls -la
+echo "Odoo source contents:"
+ls -la odoo-source/
