@@ -1,24 +1,33 @@
 #!/bin/bash
 set -o errexit
 
-echo "Starting Odoo 18 build process..."
+echo "=== Installing Odoo 18 on Render ==="
 
-# Install Odoo and dependencies
+# Install dependencies
+pip install --upgrade pip
 pip install -r requirements.txt
 
 # Create directory structure
-mkdir -p src/odoo
-mkdir -p src/addons
+mkdir -p src
 cd src
 
-# Clone Odoo source if not exists
+# Download Odoo 18
 if [ ! -f "odoo-bin" ]; then
     echo "Downloading Odoo 18 source code..."
-    git clone https://github.com/odoo/odoo.git --depth 1 --branch 18.0 .
+    wget -q https://github.com/odoo/odoo/archive/refs/heads/18.0.zip
+    unzip -q 18.0.zip
+    mv odoo-18.0/* .
+    rm -rf odoo-18.0 18.0.zip
 fi
 
-# Create necessary directories
+# Create custom addons directory
+mkdir -p addons
 mkdir -p /tmp/odoo-data
-mkdir -p /tmp/odoo-sessions
 
-echo "Odoo 18 build completed successfully!"
+# Wait for database (if environment variables are set)
+if [ ! -z "$PGHOST" ]; then
+    echo "Waiting for database connection..."
+    python ../scripts/wait_for_db.py
+fi
+
+echo "=== Odoo 18 installation complete ==="
