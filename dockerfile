@@ -2,7 +2,24 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y wget unzip && rm -rf /var/lib/apt/lists/*
+# Install system dependencies including build tools
+RUN apt-get update && apt-get install -y \
+    wget \
+    unzip \
+    build-essential \
+    python3-dev \
+    libssl-dev \
+    libffi-dev \
+    libsasl2-dev \
+    libldap2-dev \
+    libxml2-dev \
+    libxslt1-dev \
+    libjpeg-dev \
+    libpq-dev \
+    libpango-1.0-0 \
+    libharfbuzz-dev \
+    libgdk-pixbuf2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt
