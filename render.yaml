@@ -11,24 +11,23 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.12
-      - fromGroup: odoo-db-settings
-
-groups:
-  - name: odoo-db-settings
-    envVars:
       - key: PGHOST
-        generateValue: true
+        fromDatabase:
+          name: odoo-postgres
+          property: host
       - key: PGPORT
-        generateValue: true
+        fromDatabase:
+          name: odoo-postgres
+          property: port
       - key: PGUSER
-        generateValue: true
+        fromDatabase:
+          name: odoo-postgres
+          property: user
       - key: PGPASSWORD
-        generateValue: true
+        fromDatabase:
+          name: odoo-postgres
+          property: password
       - key: PGDATABASE
-        generateValue: true
-
-databases:
-  - name: odoo-postgres
-    plan: free
-    databaseName: odoo_main
-    user: odoo_user
+        fromDatabase:
+          name: odoo-postgres
+          property: database
