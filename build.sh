@@ -2,7 +2,6 @@
 set -e
 echo "=== INSTALLING ODOO 18 ==="
 pip install --upgrade pip
-pip install decorator psycopg2-binary Pillow lxml Jinja2 reportlab python-dateutil requests pypdf lxml-html-clean
 pip install -r requirements.txt
 wget -q https://github.com/odoo/odoo/archive/refs/heads/18.0.zip -O odoo.zip
 unzip -q odoo.zip
@@ -11,4 +10,4 @@ rm -rf odoo-18.0 odoo.zip
 chmod +x odoo-bin
 mkdir -p custom-addons
 mkdir -p /tmp/odoo-data
-echo "✓ Installation complete"
+echo "✓ Done"
