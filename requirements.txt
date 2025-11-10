@@ -1,4 +1,4 @@
-# Use only packages with pre-compiled wheels for Python 3.13
+# Odoo 18 compatible dependencies for Python 3.13
 psycopg2-binary
 Pillow
 lxml
@@ -20,3 +20,4 @@ qrcode
 xlrd
 xlwt
 lxml-html-clean
+pypdf

@@ -3,20 +3,23 @@ set -o errexit
 
 echo "=== Setting up Odoo 18 with Python $(python --version) ==="
 
-# Install Python dependencies using pip only (no apt-get)
+# Install Python dependencies using pip only
 echo "Installing Python dependencies..."
 pip install --upgrade pip setuptools wheel
 
-# Install requirements without system dependencies
+# Install requirements
 if [ -f "requirements.txt" ]; then
     pip install -r requirements.txt
 else
     echo "requirements.txt not found, installing basic dependencies..."
-    pip install psycopg2-binary Pillow lxml Jinja2 reportlab python-dateutil pytz
+    pip install psycopg2-binary Pillow lxml Jinja2 reportlab python-dateutil pytz pypdf
 fi
 
 # Install lxml-html-clean to fix the import issue
 pip install lxml-html-clean
+
+# Install PDF dependencies (try both pypdf and PyPDF2)
+pip install pypdf || pip install PyPDF2 || echo "PDF library installation failed, continuing..."
 
 # Download Odoo 18 source code
 echo "Downloading Odoo 18 source code..."
