@@ -24,6 +24,9 @@ RUN wget -q https://github.com/odoo/odoo/archive/refs/heads/17.0.zip -O odoo.zip
 # Copy configuration
 COPY odoo.conf .
 
+# Create data directory
+RUN mkdir -p /tmp/odoo-data
+
 EXPOSE 8069
 
 CMD ["python", "odoo-bin", "-c", "odoo.conf", "--workers=1", "--without-demo=all"]
