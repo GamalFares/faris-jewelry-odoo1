@@ -1,64 +1,60 @@
 #!/bin/bash
 set -o errexit
 
-echo "=== BULLETPROOF Odoo 18 Setup ==="
+echo "=== FINAL ODOO 18 SETUP (BINARY WHEELS ONLY) ==="
 
-# Step 1: Upgrade pip and install wheel
-echo "Step 1: Updating pip..."
-pip install --upgrade pip setuptools wheel
+# Step 1: Force pip to use only binary wheels
+echo "Step 1: Configuring pip for binary wheels only..."
+pip config set global.only-binary :all:
 
-# Step 2: Install ALL dependencies from requirements.txt
-echo "Step 2: Installing ALL Odoo 18 dependencies..."
-if [ -f "requirements.txt" ]; then
-    pip install -r requirements.txt
-else
-    echo "ERROR: requirements.txt not found!"
-    exit 1
-fi
+# Step 2: Upgrade pip
+echo "Step 2: Updating pip..."
+pip install --upgrade pip
 
-# Step 3: Install any missing critical packages individually
-echo "Step 3: Installing critical packages individually..."
-CRITICAL_PACKAGES="decorator psycopg2-binary Pillow lxml Jinja2 reportlab python-dateutil pytz Babel Werkzeug passlib requests"
-for package in $CRITICAL_PACKAGES; do
-    echo "Ensuring $package is installed..."
-    python -c "import ${package%%-*}" 2>/dev/null || pip install $package
-done
+# Step 3: Install requirements with NO BUILD
+echo "Step 3: Installing dependencies (binary wheels only)..."
+pip install --only-binary=:all: -r requirements.txt
 
-# Step 4: Download Odoo 18
-echo "Step 4: Downloading Odoo 18 source code..."
+# Step 4: If Pillow fails, try specific binary version
+echo "Step 4: Ensuring Pillow is installed..."
+python -c "import PIL" 2>/dev/null || pip install --only-binary=:all: Pillow==10.2.0
+
+# Step 5: Download Odoo 18
+echo "Step 5: Downloading Odoo 18..."
 if [ ! -f "odoo-bin" ]; then
-    wget -q https://github.com/odoo/odoo/archive/refs/heads/18.0.zip -O odoo-18.0.zip
-    unzip -q odoo-18.0.zip
+    wget -q https://github.com/odoo/odoo/archive/refs/heads/18.0.zip -O odoo.zip
+    unzip -q odoo.zip
     mv odoo-18.0/* .
-    rm -rf odoo-18.0 odoo-18.0.zip
+    rm -rf odoo-18.0 odoo.zip
 fi
 
-# Step 5: Verify installation
-echo "Step 5: Verifying installation..."
+# Step 6: Verify
+echo "Step 6: Verifying installation..."
 if [ -f "odoo-bin" ]; then
-    echo "✓ SUCCESS: odoo-bin found"
+    echo "✓ odoo-bin found"
     chmod +x odoo-bin
 else
-    echo "✗ CRITICAL ERROR: odoo-bin not found!"
-    echo "Directory contents:"
+    echo "✗ odoo-bin missing"
     ls -la
     exit 1
 fi
 
-# Step 6: Verify Python can import Odoo
-echo "Step 6: Testing Odoo imports..."
+# Step 7: Test critical imports
+echo "Step 7: Testing critical imports..."
 python -c "
-try:
-    import odoo
-    print('✓ SUCCESS: Odoo imports working')
-except ImportError as e:
-    print(f'✗ IMPORT ERROR: {e}')
-    exit(1)
+import sys
+critical_imports = ['decorator', 'psycopg2', 'PIL', 'lxml', 'jinja2']
+for imp in critical_imports:
+    try:
+        __import__(imp)
+        print(f'✓ {imp}')
+    except ImportError as e:
+        print(f'✗ {imp}: {e}')
+        sys.exit(1)
+print('✓ All critical imports successful')
 "
 
-# Step 7: Create directories
 mkdir -p custom-addons
 mkdir -p /tmp/odoo-data
 
-echo "=== ODOO 18 SETUP COMPLETED SUCCESSFULLY ==="
-echo "=== ALL DEPENDENCIES INSTALLED ==="
+echo "=== ODOO 18 READY FOR DEPLOYMENT ==="

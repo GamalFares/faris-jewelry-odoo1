@@ -1,9 +1,9 @@
-# Odoo 18 COMPLETE dependency list - DO NOT MODIFY
+# Odoo 18 - ONLY PRE-COMPILED WHEELS FOR PYTHON 3.13
 decorator==5.1.1
 psycopg2-binary==2.9.11
-Pillow==10.3.0
-lxml==4.9.3
-Jinja2==3.1.6
+Pillow==10.2.0
+lxml==5.2.0
+Jinja2==3.1.4
 reportlab==4.1.1
 python-dateutil==2.9.0.post0
 pytz==2024.2
