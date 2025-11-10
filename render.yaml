@@ -3,6 +3,7 @@ services:
     name: jewelry-odoo
     env: python
     plan: free
+    region: oregon  # Optional but recommended
     branch: main
     buildCommand: |
       chmod +x build.sh
@@ -12,22 +13,34 @@ services:
       - key: PYTHON_VERSION
         value: 3.10.12
       - key: PGHOST
-        fromDatabase:
+        fromService:
           name: odoo-postgres
+          type: pserv
           property: host
       - key: PGPORT
-        fromDatabase:
+        fromService:
           name: odoo-postgres
+          type: pserv
           property: port
       - key: PGUSER
-        fromDatabase:
+        fromService:
           name: odoo-postgres
+          type: pserv
           property: user
       - key: PGPASSWORD
-        fromDatabase:
+        fromService:
           name: odoo-postgres
+          type: pserv
           property: password
       - key: PGDATABASE
-        fromDatabase:
+        fromService:
           name: odoo-postgres
+          type: pserv
           property: database
+
+  - type: pserv
+    name: odoo-postgres
+    plan: free
+    region: oregon  # Should match web service region
+    ipAllowList: []  # Allow only internal connections
+    diskName: pg-data  # Optional but recommended
