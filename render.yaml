@@ -4,7 +4,7 @@ services:
     env: docker
     plan: free
     docker:
-      image: odoo:18.0
+      dockerfile: Dockerfile
     ports:
       - port: 8069
         protocol: HTTP
@@ -21,15 +21,9 @@ services:
         fromDatabase:
           name: faris-jewelry-db
           property: password
-      - key: ADMIN_PASSWORD
-        generateValue: true
 
   - type: pserv
     name: faris-jewelry-db
     plan: free
     image: postgres:15
     ipAllowList: []
-    databases:
-      - name: faris_jewelry
-        databaseName: faris_jewelry
-        user: faris_user
