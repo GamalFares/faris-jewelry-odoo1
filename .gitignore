@@ -1,3 +1,3 @@
-# Odoo
-.data/
+# Temporary files
+*.tmp
 *.log
