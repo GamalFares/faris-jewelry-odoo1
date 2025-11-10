@@ -5,16 +5,8 @@ services:
     plan: free
     region: oregon
     branch: main
-    buildCommand: |
-      chmod +x build.sh
-      ./build.sh
+    buildCommand: chmod +x build.sh && ./build.sh
     startCommand: python src/odoo-bin -c odoo.conf
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.12
-
-  - type: pserv
-    name: odoo-postgres
-    plan: free
-    region: oregon
-    ipAllowList: []  # Allow only internal connections
