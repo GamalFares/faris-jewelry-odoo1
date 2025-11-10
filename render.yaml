@@ -6,4 +6,4 @@ services:
     region: oregon
     branch: main
     buildCommand: chmod +x build.sh && ./build.sh
-    startCommand: python odoo-source/odoo-bin -c odoo.conf --workers=1 --without-demo=all
+    startCommand: python odoo-bin -c odoo.conf --workers=1 --without-demo=all

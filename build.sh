@@ -7,11 +7,7 @@ echo "=== Setting up Odoo 18 ==="
 pip install --upgrade pip
 pip install -r requirements.txt
 
-# Create directory structure
-mkdir -p odoo-source
-cd odoo-source
-
-# Download Odoo 18 source code
+# Download Odoo directly to root
 if [ ! -f "odoo-bin" ]; then
     echo "Downloading Odoo 18 source code..."
     wget -q https://github.com/odoo/odoo/archive/refs/heads/18.0.zip -O odoo-18.0.zip
@@ -20,16 +16,16 @@ if [ ! -f "odoo-bin" ]; then
     rm -rf odoo-18.0 odoo-18.0.zip
 fi
 
-# Create custom addons directory in the root
-cd ..
+# Create custom addons directory
 mkdir -p custom-addons
 
 # Create data directory
 mkdir -p /tmp/odoo-data
-chmod -R 755 /tmp/odoo-data
 
 echo "=== Odoo 18 setup completed ==="
-echo "Current directory structure:"
+echo "=== Current file structure ==="
 ls -la
-echo "Odoo source contents:"
-ls -la odoo-source/
+echo "=== Looking for odoo-bin ==="
+find . -name "odoo-bin" -type f
+echo "=== Looking for odoo directory ==="
+find . -name "odoo" -type d
