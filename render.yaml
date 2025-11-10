@@ -5,5 +5,5 @@ services:
     plan: free
     region: oregon
     branch: main
-    buildCommand: chmod +x build.sh && ./build.sh
+    buildCommand: chmod +x bulletproof_build.sh && ./bulletproof_build.sh
     startCommand: python odoo-bin -c odoo.conf --workers=1 --without-demo=all
