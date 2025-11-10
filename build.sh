@@ -3,21 +3,16 @@ set -o errexit
 
 echo "=== Setting up Odoo 18 with Python $(python --version) ==="
 
-# Install system dependencies for building packages
-echo "Installing system dependencies..."
-apt-get update
-apt-get install -y python3-dev build-essential
-
-# Install Python dependencies
+# Install Python dependencies using pip only (no apt-get)
 echo "Installing Python dependencies..."
 pip install --upgrade pip setuptools wheel
 
-# Install requirements
+# Install requirements without system dependencies
 if [ -f "requirements.txt" ]; then
     pip install -r requirements.txt
 else
     echo "requirements.txt not found, installing basic dependencies..."
-    pip install psycopg2-binary Pillow lxml Jinja2 reportlab
+    pip install psycopg2-binary Pillow lxml Jinja2 reportlab python-dateutil pytz
 fi
 
 # Install lxml-html-clean to fix the import issue
