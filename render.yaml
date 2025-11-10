@@ -1,9 +1,36 @@
 services:
   - type: web
-    name: jewelry-odoo
-    env: python
+    name: jewelry-odoo17
+    env: docker
     plan: free
     region: oregon
     branch: main
-    buildCommand: chmod +x build.sh && ./build.sh
-    startCommand: python odoo-bin -c odoo.conf --workers=1 --without-demo=all
+    docker:
+      dockerfile: Dockerfile
+    envVars:
+      - key: PGHOST
+        fromDatabase:
+          name: odoo-postgres
+          property: host
+      - key: PGPORT
+        fromDatabase:
+          name: odoo-postgres
+          property: port
+      - key: PGUSER
+        fromDatabase:
+          name: odoo-postgres
+          property: user
+      - key: PGPASSWORD
+        fromDatabase:
+          name: odoo-postgres
+          property: password
+      - key: PGDATABASE
+        fromDatabase:
+          name: odoo-postgres
+          property: database
+
+databases:
+  - name: odoo-postgres
+    plan: free
+    region: oregon
+    databaseName: odoo_main

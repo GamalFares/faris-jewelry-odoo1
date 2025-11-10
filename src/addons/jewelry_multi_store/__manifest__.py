@@ -1,22 +1,22 @@
 {
-    'name': 'Jewelry Multi-Store',
-    'version': '18.0.1.0',
-    'category': 'Sales',
-    'summary': 'Multi-store management for jewelry business',
+    'name': 'Jewelry Multi-Store Management',
+    'version': '17.0.1.0',
+    'category': 'Sales/Point of Sale',
+    'summary': 'Manage multiple jewelry stores',
     'description': """
-        Manage multiple jewelry stores in single Odoo instance
+        This module allows you to manage multiple jewelry stores from a single Odoo instance.
     """,
     'author': 'Your Jewelry Store',
     'website': 'https://www.yourjewelrystore.com',
-    'depends': ['sale', 'point_of_sale', 'stock'],
+    'depends': ['point_of_sale', 'stock', 'sale'],
     'data': [
         'security/ir.model.access.csv',
         'views/store_views.xml',
-        'views/sale_views.xml',
-        'views/pos_views.xml',
+        'views/menu.xml',
     ],
     'demo': [],
     'installable': True,
     'application': True,
     'auto_install': False,
+    'license': 'LGPL-3',
 }
