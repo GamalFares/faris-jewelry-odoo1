@@ -8,7 +8,7 @@ services:
     buildCommand: |
       chmod +x build.sh
       ./build.sh
-    startCommand: python src/odoo-bin -c odoo.conf --database ${PGDATABASE} --db_host ${PGHOST} --db_port ${PGPORT} --db_user ${PGUSER} --db_password ${PGPASSWORD} --without-demo=all --workers=2
+    startCommand: python src/odoo-bin -c odoo.conf --workers=2 --without-demo=all
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.12
