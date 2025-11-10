@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: faris-jewelry-odoo
+    env: docker
+    plan: free
+    docker:
+      image: odoo:18.0
+    ports:
+      - port: 8069
+        protocol: HTTP
+    envVars:
+      - key: HOST
+        fromDatabase:
+          name: faris-jewelry-db
+          property: host
+      - key: USER
+        fromDatabase:
+          name: faris-jewelry-db
+          property: user
+      - key: PASSWORD
+        fromDatabase:
+          name: faris-jewelry-db
+          property: password
+      - key: ADMIN_PASSWORD
+        generateValue: true
+
+  - type: pserv
+    name: faris-jewelry-db
+    plan: free
+    image: postgres:15
+    ipAllowList: []
+    databases:
+      - name: faris_jewelry
+        databaseName: faris_jewelry
+        user: faris_user
