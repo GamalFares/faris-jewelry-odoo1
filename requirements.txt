@@ -1,7 +1,7 @@
-# Use latest compatible versions instead of pinned versions
+# Odoo 18 compatible dependencies for Python 3.13
 psycopg2-binary
-Pillow
-lxml
+Pillow<10.0.0
+lxml==4.9.3
 Jinja2
 reportlab
 python-dateutil
@@ -20,3 +20,4 @@ ofxparse
 qrcode
 xlrd
 xlwt
+lxml-html-clean
