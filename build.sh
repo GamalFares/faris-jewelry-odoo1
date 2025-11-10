@@ -1,23 +1,11 @@
 #!/bin/bash
 set -e
-echo "=== INSTALLING ODOO 18 ==="
+echo "Installing Odoo 17 dependencies..."
 pip install --upgrade pip
 pip install -r requirements.txt
-
-wget -q https://github.com/odoo/odoo/archive/refs/heads/18.0.zip -O odoo.zip
+wget -q https://github.com/odoo/odoo/archive/refs/heads/17.0.zip -O odoo.zip
 unzip -q odoo.zip
-mv odoo-18.0/* .
-rm -rf odoo-18.0 odoo.zip
-
-# DISABLE ZEEP MONKEYPATCH
-echo "Disabling zeep monkeypatch..."
-sed -i 's/from .zeep import patch_zeep/# from .zeep import patch_zeep/' odoo/_monkeypatches/__init__.py
-sed -i 's/patch_zeep()/# patch_zeep()/' odoo/_monkeypatches/__init__.py
-
-# Disable zeep.py file
-mv odoo/_monkeypatches/zeep.py odoo/_monkeypatches/zeep.py.disabled 2>/dev/null || true
-
-chmod +x odoo-bin
-mkdir -p custom-addons
+mv odoo-17.0/* .
+rm -rf odoo-17.0 odoo.zip
 mkdir -p /tmp/odoo-data
-echo "✓ Done - zeep monkeypatch disabled"
+echo "Build completed"
