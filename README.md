@@ -1,1 +1,0 @@
-# Faris Jewelry Odoo System

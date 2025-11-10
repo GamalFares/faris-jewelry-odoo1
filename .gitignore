@@ -1,1 +1,26 @@
+# Odoo
+*.pyc
+*.pyo
+*.so
+*.egg
+*.egg-info
+__pycache__/
 *.log
+/.cache
+/.local
+/.ssh
+/tmp
+/odoo.log
+/odoo.sql
+
+# Database
+/filestore
+/sessions
+
+# Environment
+.env
+/venv
+
+# OS
+.DS_Store
+Thumbs.db

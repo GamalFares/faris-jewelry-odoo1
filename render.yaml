@@ -1,29 +1,24 @@
 services:
   - type: web
-    name: faris-jewelry-odoo
-    env: docker
+    name: jewelry-odoo
+    env: python
     plan: free
-    docker:
-      dockerfile: Dockerfile
-    ports:
-      - port: 8069
-        protocol: HTTP
+    branch: main
+    buildCommand: chmod +x build.sh && ./build.sh
+    startCommand: python src/odoo-bin -c odoo.conf
     envVars:
-      - key: HOST
-        fromDatabase:
-          name: faris-jewelry-db
-          property: host
-      - key: USER
-        fromDatabase:
-          name: faris-jewelry-db
-          property: user
-      - key: PASSWORD
-        fromDatabase:
-          name: faris-jewelry-db
-          property: password
+      - key: PYTHON_VERSION
+        value: 3.10.12
+    disk:
+      name: odoo-data
+      mountPath: /opt/render/project/src/.odoo-data
+      sizeGB: 1
 
   - type: pserv
-    name: faris-jewelry-db
+    name: odoo-postgres
+    env: postgres
     plan: free
-    image: postgres:15
-    ipAllowList: []
+    disk:
+      name: postgres-data
+      sizeGB: 1
+      mountPath: /var/lib/postgresql/data
