@@ -4,21 +4,31 @@ services:
     env: python
     plan: free
     branch: main
-    buildCommand: chmod +x build.sh && ./build.sh
+    buildCommand: |
+      chmod +x build.sh
+      ./build.sh
     startCommand: python src/odoo-bin -c odoo.conf
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.12
-    disk:
-      name: odoo-data
-      mountPath: /opt/render/project/src/.odoo-data
-      sizeGB: 1
+      - fromGroup: odoo-db-settings
 
-  - type: pserv
-    name: odoo-postgres
-    env: postgres
+groups:
+  - name: odoo-db-settings
+    envVars:
+      - key: PGHOST
+        generateValue: true
+      - key: PGPORT
+        generateValue: true
+      - key: PGUSER
+        generateValue: true
+      - key: PGPASSWORD
+        generateValue: true
+      - key: PGDATABASE
+        generateValue: true
+
+databases:
+  - name: odoo-postgres
     plan: free
-    disk:
-      name: postgres-data
-      sizeGB: 1
-      mountPath: /var/lib/postgresql/data
+    databaseName: odoo_main
+    user: odoo_user

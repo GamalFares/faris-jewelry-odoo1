@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem 
+        id="menu_jewelry_store_root" 
+        name="Jewelry Stores"
+        sequence="10"
+    />
+    
+    <menuitem 
+        id="menu_jewelry_store_config" 
+        name="Stores"
+        parent="menu_jewelry_store_root"
+        action="action_jewelry_store"
+        sequence="10"
+    />
+</odoo>

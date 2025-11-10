@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_jewelry_store_tree" model="ir.ui.view">
+        <field name="name">jewelry.store.tree</field>
+        <field name="model">jewelry.store</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="city"/>
+                <field name="phone"/>
+                <field name="manager_id"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_jewelry_store_form" model="ir.ui.view">
+        <field name="name">jewelry.store.form</field>
+        <field name="model">jewelry.store</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="phone"/>
+                            <field name="email"/>
+                        </group>
+                        <group>
+                            <field name="manager_id"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group string="Address">
+                        <field name="street"/>
+                        <field name="city"/>
+                        <field name="country_id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_jewelry_store" model="ir.actions.act_window">
+        <field name="name">Jewelry Stores</field>
+        <field name="res_model">jewelry.store</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first jewelry store!
+            </p>
+        </field>
+    </record>
+</odoo>

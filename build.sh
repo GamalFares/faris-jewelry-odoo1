@@ -1,17 +1,24 @@
 #!/bin/bash
 set -o errexit
 
-# Install Odoo
+echo "Starting Odoo 18 build process..."
+
+# Install Odoo and dependencies
 pip install -r requirements.txt
 
-# Create Odoo directory structure
+# Create directory structure
 mkdir -p src/odoo
+mkdir -p src/addons
 cd src
 
-# Clone Odoo source
-git clone https://github.com/odoo/odoo.git --depth 1 --branch 18.0 .
+# Clone Odoo source if not exists
+if [ ! -f "odoo-bin" ]; then
+    echo "Downloading Odoo 18 source code..."
+    git clone https://github.com/odoo/odoo.git --depth 1 --branch 18.0 .
+fi
 
-# Create custom addons directory
-mkdir -p addons
+# Create necessary directories
+mkdir -p /tmp/odoo-data
+mkdir -p /tmp/odoo-sessions
 
-echo "Build completed successfully!"
+echo "Odoo 18 build completed successfully!"
