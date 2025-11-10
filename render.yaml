@@ -5,10 +5,5 @@ services:
     plan: free
     region: oregon
     branch: main
-    buildCommand: |
-      chmod +x build.sh
-      ./build.sh
-    startCommand: python src/odoo-bin -c odoo.conf --workers=2 --without-demo=all
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.10.12
+    buildCommand: chmod +x build.sh && ./build.sh
+    startCommand: python src/odoo-bin -c odoo.conf --workers=1 --without-demo=all

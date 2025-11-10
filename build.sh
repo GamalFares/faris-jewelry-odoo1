@@ -1,29 +1,33 @@
 #!/bin/bash
 set -o errexit
 
-echo "=== Installing Odoo 18 from Source ==="
+echo "=== Setting up Odoo 18 with Python $(python --version) ==="
 
-# Install system dependencies (for PostgreSQL and other required libraries)
-apt-get update
-apt-get install -y python3-dev build-essential
+# Install compatible dependencies
+pip install --upgrade pip setuptools wheel
 
-# Install Python dependencies directly
-pip install --upgrade pip
-pip install psycopg2-binary==2.9.7
-pip install Pillow==10.0.1
-pip install Jinja2==3.1.2
-pip install lxml==4.9.3
-pip install reportlab==4.0.4
-pip install python-dateutil==2.8.2
-pip install pytz==2023.3
-pip install Babel==2.12.1
-pip install Werkzeug==2.3.7
-pip install passlib==1.7.4
-pip install requests==2.31.0
-pip install XlsxWriter==3.1.2
-pip install num2words==0.5.12
-pip install vobject==0.9.6.1
-pip install pyparsing==3.1.1
+# Install base dependencies first
+pip install psycopg2-binary
+pip install Pillow
+pip install lxml
+pip install Jinja2
+pip install reportlab
+pip install python-dateutil
+pip install pytz
+pip install Babel
+pip install Werkzeug
+pip install passlib
+pip install requests
+pip install XlsxWriter
+pip install num2words
+pip install vobject
+pip install pyparsing
+pip install polib
+pip install pyserial
+pip install ofxparse
+pip install qrcode
+pip install xlrd
+pip install xlwt
 
 # Create directory structure
 mkdir -p src
@@ -38,11 +42,6 @@ if [ ! -f "odoo-bin" ]; then
     rm -rf odoo-18.0 odoo-18.0.zip
 fi
 
-# Install Odoo dependencies from requirements.txt in Odoo source
-if [ -f "requirements.txt" ]; then
-    pip install -r requirements.txt
-fi
-
 # Create custom addons directory
 mkdir -p addons
 
@@ -50,4 +49,4 @@ mkdir -p addons
 mkdir -p /tmp/odoo-data
 chmod -R 755 /tmp/odoo-data
 
-echo "=== Odoo 18 installation completed successfully ==="
+echo "=== Odoo 18 setup completed ==="
