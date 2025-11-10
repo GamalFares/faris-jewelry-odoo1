@@ -5,8 +5,10 @@ services:
     plan: free
     region: oregon
     branch: main
-    buildCommand: chmod +x build.sh && ./build.sh
-    startCommand: python src/odoo-bin -c odoo.conf
+    buildCommand: |
+      chmod +x build.sh
+      ./build.sh
+    startCommand: python src/odoo-bin -c odoo.conf --database ${PGDATABASE} --db_host ${PGHOST} --db_port ${PGPORT} --db_user ${PGUSER} --db_password ${PGPASSWORD} --without-demo=all --workers=2
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.12
