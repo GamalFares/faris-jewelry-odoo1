@@ -7,9 +7,3 @@ services:
     branch: main
     docker:
       dockerfile: Dockerfile
-
-databases:
-  - name: odoo-postgres
-    plan: free
-    region: oregon
-    databaseName: odoo_main
