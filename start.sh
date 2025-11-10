@@ -7,8 +7,23 @@ echo "Host: ${PGHOST}"
 echo "Port: ${PGPORT}"
 echo "User: ${PGUSER}"
 
-sleep 5
+# Wait for database to be ready
+sleep 10
 
+# Initialize database if it doesn't exist
+echo "Initializing database..."
+python odoo-bin -c odoo.conf \
+    --database="${PGDATABASE}" \
+    --db_host="${PGHOST}" \
+    --db_port="${PGPORT}" \
+    --db_user="${PGUSER}" \
+    --db_password="${PGPASSWORD}" \
+    --init=base \
+    --stop-after-init \
+    --without-demo=all
+
+# Start Odoo
+echo "Starting Odoo server..."
 exec python odoo-bin -c odoo.conf \
     --database="${PGDATABASE}" \
     --db_host="${PGHOST}" \
