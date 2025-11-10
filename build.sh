@@ -4,27 +4,20 @@ echo "=== INSTALLING ODOO 18 ==="
 pip install --upgrade pip
 pip install -r requirements.txt
 
-# Create fake zeep module to avoid import errors
-mkdir -p /opt/render/project/src/.venv/lib/python3.13/site-packages/zeep/xsd
-cat > /opt/render/project/src/.venv/lib/python3.13/site-packages/zeep/__init__.py << 'FAKEZEEP'
-class Client: pass
-class AsyncClient: pass  
-class CachingClient: pass
-FAKEZEEP
-
-cat > /opt/render/project/src/.venv/lib/python3.13/site-packages/zeep/xsd/__init__.py << 'FAKEXSD'
-class visitor: pass
-FAKEXSD
-
-cat > /opt/render/project/src/.venv/lib/python3.13/site-packages/zeep/xsd/visitor.py << 'FAKEVISITOR'
-pass
-FAKEVISITOR
-
 wget -q https://github.com/odoo/odoo/archive/refs/heads/18.0.zip -O odoo.zip
 unzip -q odoo.zip
 mv odoo-18.0/* .
 rm -rf odoo-18.0 odoo.zip
+
+# DISABLE ZEEP MONKEYPATCH
+echo "Disabling zeep monkeypatch..."
+sed -i 's/from .zeep import patch_zeep/# from .zeep import patch_zeep/' odoo/_monkeypatches/__init__.py
+sed -i 's/patch_zeep()/# patch_zeep()/' odoo/_monkeypatches/__init__.py
+
+# Disable zeep.py file
+mv odoo/_monkeypatches/zeep.py odoo/_monkeypatches/zeep.py.disabled 2>/dev/null || true
+
 chmod +x odoo-bin
 mkdir -p custom-addons
 mkdir -p /tmp/odoo-data
-echo "✓ Done"
+echo "✓ Done - zeep monkeypatch disabled"
