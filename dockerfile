@@ -2,18 +2,14 @@ FROM odoo:17.0
 
 USER root
 
-# Install additional dependencies if needed
-RUN apt-get update && apt-get install -y \
-    wget \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+# Remove any default config
+RUN rm -f /etc/odoo/odoo.conf
 
-# Copy custom configuration
+# Copy our configuration
 COPY odoo.conf /etc/odoo/
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
-# Switch back to odoo user for security
 USER odoo
 
 CMD ["/start.sh"]
