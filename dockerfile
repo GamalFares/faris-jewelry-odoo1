@@ -13,6 +13,7 @@ COPY odoo.conf /etc/odoo/
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
+# Switch back to odoo user for security
 USER odoo
 
 CMD ["/start.sh"]
