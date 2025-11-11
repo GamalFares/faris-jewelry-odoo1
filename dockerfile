@@ -2,7 +2,7 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-# Install system dependencies including build tools
+# Install essential system dependencies only
 RUN apt-get update && apt-get install -y \
     wget \
     unzip \
@@ -10,21 +10,11 @@ RUN apt-get update && apt-get install -y \
     python3-dev \
     libssl-dev \
     libffi-dev \
-    libsasl2-dev \
-    libldap2-dev \
     libxml2-dev \
     libxslt1-dev \
     libjpeg-dev \
     libpq-dev \
-    libpango-1.0-0 \
-    libharfbuzz-dev \
-    libgdk-pixbuf-2.0-0 \
-    nodejs \
-    npm \
     && rm -rf /var/lib/apt/lists/*
-
-# Install rtlcss for RTL language support
-RUN npm install -g rtlcss
 
 COPY requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt
