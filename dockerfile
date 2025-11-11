@@ -2,7 +2,7 @@ FROM odoo:17.0
 
 USER root
 
-# Remove any default config
+# Remove ALL default configs
 RUN rm -f /etc/odoo/odoo.conf
 
 # Copy our configuration
