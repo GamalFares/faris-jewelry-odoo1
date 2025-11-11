@@ -3,18 +3,18 @@ set -e
 
 echo "Starting Odoo with official image"
 echo "Database: ${PGDATABASE}"
-echo "Host: ${PGHOST}"
+echo "Host: ${PGHOST}" 
 echo "Port: ${PGPORT}"
 echo "User: ${PGUSER}"
 
 sleep 5
 
-# Use the actual environment variable values, not the placeholder strings
+# Use ONLY command line parameters, don't rely on odoo.conf for database settings
 exec /entrypoint.sh odoo \
-    -c /etc/odoo/odoo.conf \
     --database="${PGDATABASE}" \
     --db_host="${PGHOST}" \
     --db_port="${PGPORT}" \
     --db_user="${PGUSER}" \
     --db_password="${PGPASSWORD}" \
-    --without-demo=all
+    --without-demo=all \
+    --proxy-mode
