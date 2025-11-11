@@ -19,7 +19,12 @@ RUN apt-get update && apt-get install -y \
     libpango-1.0-0 \
     libharfbuzz-dev \
     libgdk-pixbuf-2.0-0 \
+    nodejs \
+    npm \
     && rm -rf /var/lib/apt/lists/*
+
+# Install rtlcss for RTL language support
+RUN npm install -g rtlcss
 
 COPY requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt
