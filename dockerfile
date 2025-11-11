@@ -2,7 +2,7 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-# Install system dependencies
+# Install ALL system dependencies
 RUN apt-get update && apt-get install -y \
     wget \
     unzip \
@@ -10,13 +10,24 @@ RUN apt-get update && apt-get install -y \
     python3-dev \
     libssl-dev \
     libffi-dev \
+    libsasl2-dev \
+    libldap2-dev \
     libxml2-dev \
     libxslt1-dev \
     libjpeg-dev \
+    libpng-dev \
+    libtiff-dev \
+    libfreetype6-dev \
     libpq-dev \
+    libpango-1.0-0 \
+    libharfbuzz-dev \
+    libgdk-pixbuf-2.0-0 \
+    libcairo2-dev \
+    poppler-utils \
+    tesseract-ocr \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first
+# Copy requirements first for better caching
 COPY requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
