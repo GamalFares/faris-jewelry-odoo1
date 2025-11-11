@@ -27,13 +27,21 @@ except Exception as e:
 sleep 5
 
 echo "Starting Odoo server..."
-exec /entrypoint.sh odoo \
-    --database="${PGDATABASE}" \
-    --db_host="${PGHOST}" \
-    --db_port="${PGPORT}" \
-    --db_user="${PGUSER}" \
-    --db_password="${PGPASSWORD}" \
-    --db_name="${PGDATABASE}" \
-    --without-demo=all \
-    --proxy-mode \
-    --no-database-list
+# Use a Python wrapper to force the password
+exec python3 -c "
+import os
+import sys
+sys.argv = [
+    'odoo',
+    '--database', os.environ['PGDATABASE'],
+    '--db_host', os.environ['PGHOST'], 
+    '--db_port', os.environ['PGPORT'],
+    '--db_user', os.environ['PGUSER'],
+    '--db_password', os.environ['PGPASSWORD'],
+    '--without-demo', 'all',
+    '--proxy-mode',
+    '--no-database-list'
+]
+from odoo.cli import main
+main()
+"
