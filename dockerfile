@@ -1,15 +1,35 @@
-FROM odoo:17.0
+FROM python:3.10-slim
 
-USER root
+WORKDIR /app
 
-# Remove ALL default configs
-RUN rm -f /etc/odoo/odoo.conf
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    wget \
+    unzip \
+    build-essential \
+    python3-dev \
+    libssl-dev \
+    libffi-dev \
+    libxml2-dev \
+    libxslt1-dev \
+    libjpeg-dev \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy our configuration
-COPY odoo.conf /etc/odoo/
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
+# Copy requirements first
+COPY requirements.txt .
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
-USER odoo
+# Download Odoo 17.0
+RUN wget -q https://github.com/odoo/odoo/archive/refs/heads/17.0.zip -O odoo.zip && \
+    unzip -q odoo.zip && mv odoo-17.0/* . && rm -rf odoo-17.0 odoo.zip
 
-CMD ["/start.sh"]
+COPY odoo.conf .
+COPY start.sh .
+RUN chmod +x start.sh
+
+RUN mkdir -p /tmp/odoo-data
+
+EXPOSE 8069
+
+CMD ["./start.sh"]

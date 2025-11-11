@@ -34,8 +34,6 @@ pypdf==6.2.0
 lxml-html-clean==0.1.1
 rjsmin==1.2.2
 cssmin==0.2.0
-
-# CRITICAL DEPENDENCIES FOR ODOO 17:
 pyOpenSSL==23.2.0
 cryptography==41.0.7
 PyJWT==2.8.0
