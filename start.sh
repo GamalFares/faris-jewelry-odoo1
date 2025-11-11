@@ -1,33 +1,19 @@
 #!/bin/bash
 set -e
 
-echo "Starting Odoo with environment variables:"
+echo "Starting Odoo on Free Tier"
 echo "Database: ${PGDATABASE}"
-echo "Host: ${PGHOST}"
-echo "Port: ${PGPORT}"
-echo "User: ${PGUSER}"
 
-# Wait for database to be ready
-sleep 10
+# Minimal wait for free tier
+sleep 5
 
-# Initialize database if needed
-echo "Initializing Odoo database..."
-python odoo-bin -c odoo.conf \
-    --database="${PGDATABASE}" \
-    --db_host="${PGHOST}" \
-    --db_port="${PGPORT}" \
-    --db_user="${PGUSER}" \
-    --db_password="${PGPASSWORD}" \
-    --init=base \
-    --without-demo=all \
-    --stop-after-init || echo "Database initialization completed or already exists"
-
-echo "Starting Odoo server..."
+# Start Odoo with minimal settings for faster startup
 exec python odoo-bin -c odoo.conf \
     --database="${PGDATABASE}" \
     --db_host="${PGHOST}" \
     --db_port="${PGPORT}" \
     --db_user="${PGUSER}" \
     --db_password="${PGPASSWORD}" \
+    --without-demo=all \
     --workers=1 \
-    --without-demo=all
+    --max-cron-threads=1
