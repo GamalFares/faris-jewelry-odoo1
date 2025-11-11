@@ -44,12 +44,11 @@ PyJWT==2.8.0
 # SCSS Compilation
 libsass==0.22.0
 
-# Accounting & Finance
-stdnum==1.19
+# Accounting & Finance - CORRECTED VERSIONS
 python-stdnum==1.18
 
 # E-commerce & Payments
-stripe==7.7.0
+stripe==5.5.0
 paypalrestsdk==1.13.1
 
 # Reporting & PDF
@@ -90,7 +89,6 @@ dropbox==11.36.2
 # Additional Utilities
 python-slugify==8.0.1
 pytesseract==0.3.10
-qrcode[pil]==7.4.2
 pycairo==1.25.1
 cairocffi==1.6.1
 cairosvg==2.7.1
