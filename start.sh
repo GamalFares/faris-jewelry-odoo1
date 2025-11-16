@@ -4,13 +4,20 @@ set -e
 echo "Starting Faris Jewelry Odoo Instance..."
 echo "Database: ${PGDATABASE}"
 
-# Wait for database
 sleep 10
 
-# Start backup cron service
-service cron start
+# Force regenerate all assets and update modules
+echo "Regenerating assets and updating modules..."
+python odoo-bin -c odoo.conf \
+    --database="${PGDATABASE}" \
+    --db_host="${PGHOST}" \
+    --db_port="${PGPORT}" \
+    --db_user="${PGUSER}" \
+    --db_password="${PGPASSWORD}" \
+    --update=base,web,web_editor \
+    --stop-after-init || echo "Module update completed"
 
-# Start Odoo
+echo "Starting Odoo server..."
 exec python odoo-bin -c odoo.conf \
     --database="${PGDATABASE}" \
     --db_host="${PGHOST}" \
