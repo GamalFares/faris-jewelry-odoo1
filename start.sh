@@ -6,23 +6,24 @@ echo "Database: ${PGDATABASE}"
 
 sleep 10
 
-# Nuclear option: Reset and regenerate all assets
-echo "Resetting and regenerating all assets..."
+# Force complete asset regeneration and module update
+echo "Performing complete system reset..."
 python odoo-bin -c odoo.conf \
     --database="${PGDATABASE}" \
     --db_host="${PGHOST}" \
     --db_port="${PGPORT}" \
     --db_user="${PGUSER}" \
     --db_password="${PGPASSWORD}" \
+    --init=base,web \
     --update=all \
+    --load=base,web \
     --stop-after-init
 
-echo "Starting Odoo server with development mode..."
+echo "Starting Odoo server..."
 exec python odoo-bin -c odoo.conf \
     --database="${PGDATABASE}" \
     --db_host="${PGHOST}" \
     --db_port="${PGPORT}" \
     --db_user="${PGUSER}" \
     --db_password="${PGPASSWORD}" \
-    --without-demo=all \
-    --dev=all
+    --without-demo=all
