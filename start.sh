@@ -1,41 +1,86 @@
 #!/bin/bash
 set -e
 
-echo "Starting Faris Jewelry Odoo - PERSISTENT MODE"
-echo "Using official Odoo 17.0 image on port 10000"
+echo "=========================================="
+echo "Starting Faris Jewelry Odoo - SECURE MODE"
+echo "=========================================="
 
-# Debug: Check if web module exists
-echo "Checking for web module..."
-ls -la /usr/lib/python3/dist-packages/odoo/addons/ | grep web
-
-sleep 5
-
-# Check if database exists, create if it doesn't
-echo "Checking database..."
-if ! PGPASSWORD="${DB_PASSWORD}" psql -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_USER}" -d "${DB_NAME}" -c "SELECT 1;" > /dev/null 2>&1; then
-    echo "Creating new database..."
-    PGPASSWORD="${DB_PASSWORD}" createdb -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_USER}" "${DB_NAME}"
-    
-    echo "Initializing Odoo with base modules..."
-    /usr/bin/odoo -c /etc/odoo/odoo.conf \
-        --database="${DB_NAME}" \
-        --db_host="${DB_HOST}" \
-        --db_port="${DB_PORT}" \
-        --db_user="${DB_USER}" \
-        --db_password="${DB_PASSWORD}" \
-        --init=base \
-        --without-demo=all \
-        --stop-after-init
-else
-    echo "Database exists - starting Odoo normally..."
+# Validate required environment variables
+if [ -z "${DB_PASSWORD}" ]; then
+    echo "❌ ERROR: DB_PASSWORD environment variable is not set"
+    echo "Please set DB_PASSWORD in your Render environment variables"
+    exit 1
 fi
 
-echo "Starting Odoo server on port 10000..."
-exec /usr/bin/odoo -c /etc/odoo/odoo.conf \
-    --database="${DB_NAME}" \
-    --db_host="${DB_HOST}" \
-    --db_port="${DB_PORT}" \
-    --db_user="${DB_USER}" \
-    --db_password="${DB_PASSWORD}" \
-    --http-port=10000 \
-    --without-demo=all
+echo "✅ Environment variables validated"
+echo "📦 Odoo Version: 17.0"
+echo "🌐 HTTP Port: 10000"
+echo "🗄️ Database: ${DB_NAME}"
+echo "🔐 Database User: ${DB_USER}"
+
+# Create final configuration file with environment substitution
+echo "🔧 Generating Odoo configuration..."
+envsubst < /app/odoo.conf.template > /tmp/odoo.conf
+
+# Verify the configuration was created
+if [ ! -f /tmp/odoo.conf ]; then
+    echo "❌ ERROR: Failed to create Odoo configuration file"
+    exit 1
+fi
+
+echo "✅ Configuration file generated successfully"
+
+# Test database connection
+echo "🔌 Testing database connection..."
+if ! PGPASSWORD="${DB_PASSWORD}" psql \
+    -h "dpg-d496riili9vc739mmk40-a" \
+    -p "5432" \
+    -U "faris_jewelry_odoodb_omgw_user" \
+    -d "faris_jewelry_odoodb_omgw" \
+    -c "SELECT 1;" > /dev/null 2>&1; then
+    
+    echo "⚠️ Database connection failed or database doesn't exist"
+    echo "Attempting to create database..."
+    
+    # Create database if it doesn't exist
+    if PGPASSWORD="${DB_PASSWORD}" createdb \
+        -h "dpg-d496riili9vc739mmk40-a" \
+        -p "5432" \
+        -U "faris_jewelry_odoodb_omgw_user" \
+        "faris_jewelry_odoodb_omgw"; then
+        
+        echo "✅ Database created successfully"
+        
+        # Initialize Odoo with base modules
+        echo "🚀 Initializing Odoo database..."
+        /usr/bin/odoo \
+            --config=/tmp/odoo.conf \
+            --init=base \
+            --without-demo=all \
+            --stop-after-init
+            
+        echo "✅ Odoo database initialized"
+    else
+        echo "❌ ERROR: Failed to create database"
+        exit 1
+    fi
+else
+    echo "✅ Database connection successful"
+fi
+
+# Security check: Ensure password is not in any log files
+echo "🔒 Performing security checks..."
+if grep -r "${DB_PASSWORD}" /tmp/ 2>/dev/null; then
+    echo "❌ SECURITY WARNING: Password found in temporary files!"
+    exit 1
+fi
+echo "✅ Security checks passed"
+
+# Start Odoo server
+echo "🎯 Starting Odoo server on port 10000..."
+echo "📱 Your Odoo instance will be available at:"
+echo "   https://your-render-url.onrender.com"
+echo "=========================================="
+
+# Start Odoo with the generated configuration
+exec /usr/bin/odoo --config=/tmp/odoo.conf

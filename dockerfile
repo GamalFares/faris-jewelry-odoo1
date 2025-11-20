@@ -1,7 +1,22 @@
 FROM odoo:17.0
 
-# Copy only the configuration file
-COPY odoo.conf /etc/odoo/
+# Switch to root for file operations
+USER root
 
-# Use Odoo's default command (no custom start.sh)
-CMD ["/usr/bin/odoo", "--config=/etc/odoo/odoo.conf"]
+# Create app directory
+RUN mkdir -p /app
+WORKDIR /app
+
+# Copy configuration template and startup script
+COPY odoo.conf.template /app/
+COPY start.sh /app/
+
+# Install envsubst for environment variable substitution
+RUN apt-get update && apt-get install -y gettext-base && \
+    chmod +x /app/start.sh
+
+# Switch back to odoo user for security
+USER odoo
+
+# Start using our custom script
+CMD ["/app/start.sh"]
