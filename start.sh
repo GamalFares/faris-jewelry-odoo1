@@ -2,28 +2,44 @@
 set -e
 
 echo "=========================================="
-echo "Starting Faris Jewelry Odoo"
+echo "🚀 Starting Faris Jewelry Odoo"
 echo "=========================================="
 
-# Use the password from environment
-DB_PASSWORD="${DB_PASSWORD}"
-
-if [ -z "$DB_PASSWORD" ]; then
-    echo "❌ ERROR: DB_PASSWORD is not set in environment"
+# Validate environment variables
+if [ -z "${DB_PASSWORD}" ]; then
+    echo "❌ ERROR: DB_PASSWORD environment variable is not set"
+    echo "Please set DB_PASSWORD in your Render environment variables"
     exit 1
 fi
 
-echo "✅ Database password is set"
+echo "✅ Environment validation passed"
+echo "📦 Odoo Version: 17.0"
+echo "🌐 Port: 10000"
+echo "🗄️ Database: ${DB_NAME:-faris_jewelry_odoodb_omgw}"
 
-# Update the configuration with the actual password
+# Substitute environment variables in configuration
 echo "🔧 Configuring Odoo..."
-sed -i "s/YOUR_DB_PASSWORD_PLACEHOLDER/$DB_PASSWORD/g" /tmp/odoo.conf
+envsubst < /etc/odoo/odoo.conf > /tmp/odoo.conf
 
-# Copy to Odoo's expected location
-cp /tmp/odoo.conf /tmp/odoo-final.conf
+# Verify configuration was created
+if [ ! -f /tmp/odoo.conf ]; then
+    echo "❌ ERROR: Failed to create Odoo configuration"
+    exit 1
+fi
 
 echo "✅ Configuration complete"
-echo "🎯 Starting Odoo server on port 10000..."
 
-# Start Odoo
-exec /usr/bin/odoo --config=/tmp/odoo-final.conf
+# Security check - ensure password isn't leaked
+if grep -r "${DB_PASSWORD}" /tmp/ 2>/dev/null; then
+    echo "❌ SECURITY ERROR: Password found in temporary files"
+    exit 1
+fi
+
+echo "🔒 Security checks passed"
+
+# Start Odoo server
+echo "🎯 Starting Odoo server on port 10000..."
+echo "📱 Your jewelry store will be available at your Render URL"
+echo "=========================================="
+
+exec /usr/bin/odoo --config=/tmp/odoo.conf
