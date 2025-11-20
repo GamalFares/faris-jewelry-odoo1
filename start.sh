@@ -15,57 +15,28 @@ fi
 echo "✅ Environment variables validated"
 echo "📦 Odoo Version: 17.0"
 echo "🌐 HTTP Port: 10000"
-echo "🗄️ Database: ${DB_NAME}"
-echo "🔐 Database User: ${DB_USER}"
 
-# Create final configuration file with environment substitution
-echo "🔧 Generating Odoo configuration..."
-envsubst < /app/odoo.conf.template > /tmp/odoo.conf
+# Replace the password placeholder in your existing odoo.conf
+echo "🔧 Updating Odoo configuration with environment variables..."
+sed -i "s/YOUR_DB_PASSWORD_PLACEHOLDER/${DB_PASSWORD}/g" /app/odoo.conf
 
-# Verify the configuration was created
-if [ ! -f /tmp/odoo.conf ]; then
-    echo "❌ ERROR: Failed to create Odoo configuration file"
-    exit 1
-fi
+# Copy the updated config to Odoo's expected location
+cp /app/odoo.conf /tmp/odoo.conf
 
-echo "✅ Configuration file generated successfully"
+echo "✅ Configuration updated successfully"
 
 # Test database connection
 echo "🔌 Testing database connection..."
-if ! PGPASSWORD="${DB_PASSWORD}" psql \
+if PGPASSWORD="${DB_PASSWORD}" psql \
     -h "dpg-d496riili9vc739mmk40-a" \
     -p "5432" \
     -U "faris_jewelry_odoodb_omgw_user" \
     -d "faris_jewelry_odoodb_omgw" \
     -c "SELECT 1;" > /dev/null 2>&1; then
     
-    echo "⚠️ Database connection failed or database doesn't exist"
-    echo "Attempting to create database..."
-    
-    # Create database if it doesn't exist
-    if PGPASSWORD="${DB_PASSWORD}" createdb \
-        -h "dpg-d496riili9vc739mmk40-a" \
-        -p "5432" \
-        -U "faris_jewelry_odoodb_omgw_user" \
-        "faris_jewelry_odoodb_omgw"; then
-        
-        echo "✅ Database created successfully"
-        
-        # Initialize Odoo with base modules
-        echo "🚀 Initializing Odoo database..."
-        /usr/bin/odoo \
-            --config=/tmp/odoo.conf \
-            --init=base \
-            --without-demo=all \
-            --stop-after-init
-            
-        echo "✅ Odoo database initialized"
-    else
-        echo "❌ ERROR: Failed to create database"
-        exit 1
-    fi
-else
     echo "✅ Database connection successful"
+else
+    echo "⚠️ Database connection failed - Odoo will attempt to create database"
 fi
 
 # Security check: Ensure password is not in any log files
@@ -78,9 +49,8 @@ echo "✅ Security checks passed"
 
 # Start Odoo server
 echo "🎯 Starting Odoo server on port 10000..."
-echo "📱 Your Odoo instance will be available at:"
-echo "   https://your-render-url.onrender.com"
+echo "📱 Your Odoo instance will be available soon!"
 echo "=========================================="
 
-# Start Odoo with the generated configuration
+# Start Odoo with the configuration
 exec /usr/bin/odoo --config=/tmp/odoo.conf

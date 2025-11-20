@@ -7,8 +7,8 @@ USER root
 RUN mkdir -p /app
 WORKDIR /app
 
-# Copy configuration template and startup script
-COPY odoo.conf.template /app/
+# Copy your existing odoo.conf and new startup script
+COPY odoo.conf /app/
 COPY start.sh /app/
 
 # Install envsubst for environment variable substitution
