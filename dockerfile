@@ -2,7 +2,7 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-# Install essential system dependencies only
+# Install system dependencies including backup tools
 RUN apt-get update && apt-get install -y \
     wget \
     unzip \
@@ -14,6 +14,9 @@ RUN apt-get update && apt-get install -y \
     libxslt1-dev \
     libjpeg-dev \
     libpq-dev \
+    postgresql-client \
+    curl \
+    cron \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better caching
@@ -26,9 +29,13 @@ RUN wget -q https://github.com/odoo/odoo/archive/refs/heads/17.0.zip -O odoo.zip
 
 COPY odoo.conf .
 COPY start.sh .
-RUN chmod +x start.sh
+COPY backup.sh .
+RUN chmod +x start.sh backup.sh
 
-RUN mkdir -p /tmp/odoo-data
+# Setup backup cron job
+RUN echo "0 2 * * * /app/backup.sh" | crontab -
+
+RUN mkdir -p /tmp/odoo-data /app/backups
 
 EXPOSE 8069
 

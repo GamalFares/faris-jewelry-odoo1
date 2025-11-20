@@ -1,13 +1,18 @@
 #!/bin/bash
 set -e
 
-echo "Starting Odoo from source..."
+echo "Starting Faris Jewelry Odoo - COMPLETE RESET"
 echo "Database: ${PGDATABASE}"
 
 sleep 10
 
-# Initialize database first, then start
-echo "Initializing database..."
+# Drop and recreate the database for clean start
+echo "Resetting database..."
+PGPASSWORD="${PGPASSWORD}" dropdb -h "${PGHOST}" -p "${PGPORT}" -U "${PGUSER}" "${PGDATABASE}" || echo "Database might not exist yet"
+
+PGPASSWORD="${PGPASSWORD}" createdb -h "${PGHOST}" -p "${PGPORT}" -U "${PGUSER}" "${PGDATABASE}"
+
+echo "Initializing Odoo with base modules..."
 python odoo-bin -c odoo.conf \
     --database="${PGDATABASE}" \
     --db_host="${PGHOST}" \
