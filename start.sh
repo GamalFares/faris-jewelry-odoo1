@@ -2,7 +2,7 @@
 set -e
 
 echo "Starting Faris Jewelry Odoo - PERSISTENT MODE"
-echo "Using official Odoo 17.0 image"
+echo "Using official Odoo 17.0 image on port 10000"
 
 # Debug: Check if web module exists
 echo "Checking for web module..."
@@ -30,11 +30,12 @@ else
     echo "Database exists - starting Odoo normally..."
 fi
 
-echo "Starting Odoo server..."
+echo "Starting Odoo server on port 10000..."
 exec /usr/bin/odoo -c /etc/odoo/odoo.conf \
     --database="${DB_NAME}" \
     --db_host="${DB_HOST}" \
     --db_port="${DB_PORT}" \
     --db_user="${DB_USER}" \
     --db_password="${DB_PASSWORD}" \
+    --http-port=10000 \
     --without-demo=all
