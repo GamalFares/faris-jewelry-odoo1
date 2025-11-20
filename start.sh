@@ -2,27 +2,27 @@
 set -e
 
 echo "Starting Faris Jewelry Odoo - PERSISTENT MODE"
-echo "Database: ${PGDATABASE}"
+echo "Using official Odoo 17.0 image"
 
-# Debug: Check official addons path
-echo "Checking official Odoo addons path..."
-ls -la /usr/lib/python3/dist-packages/odoo/addons/ | grep web | head -5
+# Debug: Check if web module exists
+echo "Checking for web module..."
+ls -la /usr/lib/python3/dist-packages/odoo/addons/ | grep web
 
 sleep 5
 
 # Check if database exists, create if it doesn't
 echo "Checking database..."
-if ! PGPASSWORD="${PGPASSWORD}" psql -h "${PGHOST}" -p "${PGPORT}" -U "${PGUSER}" -d "${PGDATABASE}" -c "SELECT 1;" > /dev/null 2>&1; then
+if ! PGPASSWORD="${DB_PASSWORD}" psql -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_USER}" -d "${DB_NAME}" -c "SELECT 1;" > /dev/null 2>&1; then
     echo "Creating new database..."
-    PGPASSWORD="${PGPASSWORD}" createdb -h "${PGHOST}" -p "${PGPORT}" -U "${PGUSER}" "${PGDATABASE}"
+    PGPASSWORD="${DB_PASSWORD}" createdb -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_USER}" "${DB_NAME}"
     
     echo "Initializing Odoo with base modules..."
-    python /usr/bin/odoo -c /etc/odoo/odoo.conf \
-        --database="${PGDATABASE}" \
-        --db_host="${PGHOST}" \
-        --db_port="${PGPORT}" \
-        --db_user="${PGUSER}" \
-        --db_password="${PGPASSWORD}" \
+    /usr/bin/odoo -c /etc/odoo/odoo.conf \
+        --database="${DB_NAME}" \
+        --db_host="${DB_HOST}" \
+        --db_port="${DB_PORT}" \
+        --db_user="${DB_USER}" \
+        --db_password="${DB_PASSWORD}" \
         --init=base \
         --without-demo=all \
         --stop-after-init
@@ -31,10 +31,10 @@ else
 fi
 
 echo "Starting Odoo server..."
-exec python /usr/bin/odoo -c /etc/odoo/odoo.conf \
-    --database="${PGDATABASE}" \
-    --db_host="${PGHOST}" \
-    --db_port="${PGPORT}" \
-    --db_user="${PGUSER}" \
-    --db_password="${PGPASSWORD}" \
+exec /usr/bin/odoo -c /etc/odoo/odoo.conf \
+    --database="${DB_NAME}" \
+    --db_host="${DB_HOST}" \
+    --db_port="${DB_PORT}" \
+    --db_user="${DB_USER}" \
+    --db_password="${DB_PASSWORD}" \
     --without-demo=all
