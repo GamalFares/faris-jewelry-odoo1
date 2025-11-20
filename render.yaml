@@ -7,3 +7,6 @@ services:
     branch: main
     docker:
       dockerfile: Dockerfile
+    envVars:
+      - key: DB_PASSWORD
+     
