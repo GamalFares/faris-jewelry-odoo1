@@ -4,6 +4,12 @@ set -e
 echo "Starting Faris Jewelry Odoo - PERSISTENT MODE"
 echo "Database: ${PGDATABASE}"
 
+# Debug: Check if addons directories exist
+echo "Checking addons paths..."
+ls -la /app/odoo/ | head -10
+ls -la /app/odoo/addons/ | head -5 2>/dev/null || echo "No /app/odoo/addons directory"
+ls -la /app/odoo/odoo/addons/ | head -5 2>/dev/null || echo "No /app/odoo/odoo/addons directory"
+
 sleep 5
 
 # Check if database exists, create if it doesn't
