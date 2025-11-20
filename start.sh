@@ -1,27 +1,30 @@
 #!/bin/bash
 set -e
 
-echo "Starting Faris Jewelry Odoo - COMPLETE RESET"
+echo "Starting Faris Jewelry Odoo - PERSISTENT MODE"
 echo "Database: ${PGDATABASE}"
 
-sleep 10
+sleep 5
 
-# Drop and recreate the database for clean start
-echo "Resetting database..."
-PGPASSWORD="${PGPASSWORD}" dropdb -h "${PGHOST}" -p "${PGPORT}" -U "${PGUSER}" "${PGDATABASE}" || echo "Database might not exist yet"
-
-PGPASSWORD="${PGPASSWORD}" createdb -h "${PGHOST}" -p "${PGPORT}" -U "${PGUSER}" "${PGDATABASE}"
-
-echo "Initializing Odoo with base modules..."
-python odoo-bin -c odoo.conf \
-    --database="${PGDATABASE}" \
-    --db_host="${PGHOST}" \
-    --db_port="${PGPORT}" \
-    --db_user="${PGUSER}" \
-    --db_password="${PGPASSWORD}" \
-    --init=base \
-    --without-demo=all \
-    --stop-after-init
+# Check if database exists, create if it doesn't (but NEVER drop it)
+echo "Checking database..."
+if ! PGPASSWORD="${PGPASSWORD}" psql -h "${PGHOST}" -p "${PGPORT}" -U "${PGUSER}" -d "${PGDATABASE}" -c "SELECT 1;" >/dev/null 2>&1; then
+    echo "Creating new database..."
+    PGPASSWORD="${PGPASSWORD}" createdb -h "${PGHOST}" -p "${PGPORT}" -U "${PGUSER}" "${PGDATABASE}"
+    
+    echo "Initializing Odoo with base modules..."
+    python odoo-bin -c odoo.conf \
+        --database="${PGDATABASE}" \
+        --db_host="${PGHOST}" \
+        --db_port="${PGPORT}" \
+        --db_user="${PGUSER}" \
+        --db_password="${PGPASSWORD}" \
+        --init=base \
+        --without-demo=all \
+        --stop-after-init
+else
+    echo "Database exists - starting Odoo normally..."
+fi
 
 echo "Starting Odoo server..."
 exec python odoo-bin -c odoo.conf \
