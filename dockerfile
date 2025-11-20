@@ -1,8 +1,8 @@
 FROM odoo:17.0
 
-# Install envsubst for environment variable substitution
+# Install envsubst and PostgreSQL client for SSL
 USER root
-RUN apt-get update && apt-get install -y gettext-base
+RUN apt-get update && apt-get install -y gettext-base postgresql-client
 USER odoo
 
 # Copy configuration
