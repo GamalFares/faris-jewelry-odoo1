@@ -6,7 +6,11 @@ echo "Database: ${PGDATABASE}"
 
 sleep 5
 
+<<<<<<< HEAD
 # Check if database exists, create if it doesn't
+=======
+# Check if database exists, create if it doesn't (but NEVER drop it)
+>>>>>>> origin/test
 echo "Checking database..."
 if ! PGPASSWORD="${PGPASSWORD}" psql -h "${PGHOST}" -p "${PGPORT}" -U "${PGUSER}" -d "${PGDATABASE}" -c "SELECT 1;" >/dev/null 2>&1; then
     echo "Creating new database..."
