@@ -4,11 +4,9 @@ set -e
 echo "Starting Faris Jewelry Odoo - PERSISTENT MODE"
 echo "Database: ${PGDATABASE}"
 
-# Debug: Check if addons directories exist
-echo "Checking addons paths..."
-ls -la /app/odoo/ | head -10
-ls -la /app/odoo/addons/ | head -5 2>/dev/null || echo "No /app/odoo/addons directory"
-ls -la /app/odoo/odoo/addons/ | head -5 2>/dev/null || echo "No /app/odoo/odoo/addons directory"
+# Debug: Check official addons path
+echo "Checking official Odoo addons path..."
+ls -la /usr/lib/python3/dist-packages/odoo/addons/ | grep web | head -5
 
 sleep 5
 
@@ -19,7 +17,7 @@ if ! PGPASSWORD="${PGPASSWORD}" psql -h "${PGHOST}" -p "${PGPORT}" -U "${PGUSER}
     PGPASSWORD="${PGPASSWORD}" createdb -h "${PGHOST}" -p "${PGPORT}" -U "${PGUSER}" "${PGDATABASE}"
     
     echo "Initializing Odoo with base modules..."
-    python odoo-bin -c odoo.conf \
+    python /usr/bin/odoo -c /etc/odoo/odoo.conf \
         --database="${PGDATABASE}" \
         --db_host="${PGHOST}" \
         --db_port="${PGPORT}" \
@@ -33,7 +31,7 @@ else
 fi
 
 echo "Starting Odoo server..."
-exec python odoo-bin -c odoo.conf \
+exec python /usr/bin/odoo -c /etc/odoo/odoo.conf \
     --database="${PGDATABASE}" \
     --db_host="${PGHOST}" \
     --db_port="${PGPORT}" \

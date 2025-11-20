@@ -1,42 +1,18 @@
-FROM python:3.10-slim
+FROM odoo:17.0
 
-WORKDIR /app
+# Copy your configuration files
+COPY odoo.conf /etc/odoo/
+COPY start.sh /app/
+COPY backup.sh /app/
 
-# Install system dependencies including backup tools
-RUN apt-get update && apt-get install -y \
-    wget \
-    unzip \
-    build-essential \
-    python3-dev \
-    libssl-dev \
-    libffi-dev \
-    libxml2-dev \
-    libxslt1-dev \
-    libjpeg-dev \
-    libpq-dev \
-    postgresql-client \
-    curl \
-    cron \
-    && rm -rf /var/lib/apt/lists/*
+# Make scripts executable
+RUN chmod +x /app/start.sh /app/backup.sh
 
-# Copy requirements first for better caching
-COPY requirements.txt .
-RUN pip install --upgrade pip && pip install -r requirements.txt
-
-# Download Odoo 17.0
-RUN wget -q https://github.com/odoo/odoo/archive/refs/heads/17.0.zip -O odoo.zip && \
-    unzip -q odoo.zip && mv odoo-17.0/* . && rm -rf odoo-17.0 odoo.zip
-
-COPY odoo.conf .
-COPY start.sh .
-COPY backup.sh .
-RUN chmod +x start.sh backup.sh
-
-# Setup backup cron job
+# Setup cron for backups
 RUN echo "0 2 * * * /app/backup.sh" | crontab -
 
+# Create necessary directories
 RUN mkdir -p /tmp/odoo-data /app/backups
 
-EXPOSE 8069
-
+WORKDIR /app
 CMD ["./start.sh"]
