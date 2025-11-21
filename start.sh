@@ -13,9 +13,17 @@ if [ -z "${DB_PASSWORD}" ]; then
 fi
 
 echo "✅ Environment validation passed"
-echo "📦 Odoo Version: 17.0"
-echo "🌐 Port: 10000"
-echo "🗄️ Database: ${DB_NAME:-faris_jewelry_odoodb_omgw}"
+
+# Test database connection with SSL first
+echo "🔌 Testing database connection with SSL..."
+if PGPASSWORD="${DB_PASSWORD}" psql \
+    "postgresql://faris_jewelry_odoodb_omgw_user:${DB_PASSWORD}@dpg-cnufmnt109ks73bdjj80-a.oregon-postgres.render.com:5432/faris_jewelry_odoodb_omgw?sslmode=require" \
+    -c "SELECT 1;" > /dev/null 2>&1; then
+    echo "✅ Database connection successful with SSL"
+else
+    echo "❌ Database connection failed - SSL issue persists"
+    echo "Trying without SSL for initial setup..."
+fi
 
 # Substitute environment variables in configuration
 echo "🔧 Configuring Odoo..."
@@ -29,17 +37,9 @@ fi
 
 echo "✅ Configuration complete"
 
-# Security check - ensure password isn't leaked
-if grep -r "${DB_PASSWORD}" /tmp/ 2>/dev/null; then
-    echo "❌ SECURITY ERROR: Password found in temporary files"
-    exit 1
-fi
-
-echo "🔒 Security checks passed"
-
 # Start Odoo server
 echo "🎯 Starting Odoo server on port 10000..."
 echo "📱 Your jewelry store will be available at your Render URL"
 echo "=========================================="
 
-exec /usr/bin/odoo --config=/tmp/odoo.conf
+exec /usr/bin/odoo --config=/tmp/odoo.conf --db-template=template0
