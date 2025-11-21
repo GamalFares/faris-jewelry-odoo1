@@ -1,7 +1,16 @@
 FROM odoo:17.0
 
-# Copy configuration file with hardcoded password (TEMPORARY)
-COPY odoo.conf /etc/odoo/
+# Switch to root for setup
+USER root
 
-# Use Odoo's default command
-CMD ["/usr/bin/odoo", "--config=/etc/odoo/odoo.conf"]
+# Install necessary tools
+RUN apt-get update && apt-get install -y postgresql-client
+
+# Switch back to odoo user
+USER odoo
+
+# Copy startup script
+COPY start.sh /app/
+RUN chmod +x /app/start.sh
+
+CMD ["/app/start.sh"]

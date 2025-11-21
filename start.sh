@@ -1,33 +1,31 @@
 #!/bin/bash
 set -e
 
-echo "Starting Faris Jewelry Odoo - COMPLETE RESET"
-echo "Database: ${PGDATABASE}"
+echo "=========================================="
+echo "🚀 Starting Faris Jewelry Odoo"
+echo "=========================================="
 
-sleep 10
+# Create Odoo configuration
+cat > /tmp/odoo.conf << 'EOF'
+[options]
+addons_path = /usr/lib/python3/dist-packages/odoo/addons
+data_dir = /var/lib/odoo
+admin_passwd = admin
+DB_HOST = dpg-cnufmnt109ks73bdjj80-a.oregon-postgres.render.com
+DB_PORT = 5432
+DB_USER = faris_jewelry_odoodb_omgw_user
+DB_PASSWORD = ${DB_PASSWORD}
+DB_NAME = faris_jewelry_odoodb_omgw
+without_demo = all
+http_port = 10000
+proxy_mode = True
+workers = 1
+max_cron_threads = 1
+list_db = False
+EOF
 
-# Drop and recreate the database for clean start
-echo "Resetting database..."
-PGPASSWORD="${PGPASSWORD}" dropdb -h "${PGHOST}" -p "${PGPORT}" -U "${PGUSER}" "${PGDATABASE}" || echo "Database might not exist yet"
+echo "✅ Configuration created"
 
-PGPASSWORD="${PGPASSWORD}" createdb -h "${PGHOST}" -p "${PGPORT}" -U "${PGUSER}" "${PGDATABASE}"
-
-echo "Initializing Odoo with base modules..."
-python odoo-bin -c odoo.conf \
-    --database="${PGDATABASE}" \
-    --db_host="${PGHOST}" \
-    --db_port="${PGPORT}" \
-    --db_user="${PGUSER}" \
-    --db_password="${PGPASSWORD}" \
-    --init=base \
-    --without-demo=all \
-    --stop-after-init
-
-echo "Starting Odoo server..."
-exec python odoo-bin -c odoo.conf \
-    --database="${PGDATABASE}" \
-    --db_host="${PGHOST}" \
-    --db_port="${PGPORT}" \
-    --db_user="${PGUSER}" \
-    --db_password="${PGPASSWORD}" \
-    --without-demo=all
+# Start Odoo
+echo "🎯 Starting Odoo server on port 10000..."
+exec /usr/bin/odoo --config=/tmp/odoo.conf --db-template=template0
