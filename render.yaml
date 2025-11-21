@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: faris-jewelry-permanent
+    name: jewelry-odoo17
     env: docker
     plan: free
     region: oregon

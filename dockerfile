@@ -1,16 +1,7 @@
-FROM odoo:18.0
+FROM odoo:17.0
 
-# Switch to root to set permissions
-USER root
+# Copy configuration file with hardcoded password (TEMPORARY)
+COPY odoo.conf /etc/odoo/
 
-# Install PostgreSQL client for testing
-RUN apt-get update && apt-get install -y postgresql-client
-
-# Copy and make script executable as root
-COPY start.sh /app/
-RUN chmod +x /app/start.sh
-
-# Switch back to odoo user for security
-USER odoo
-
-CMD ["/app/start.sh"]
+# Use Odoo's default command
+CMD ["/usr/bin/odoo", "--config=/etc/odoo/odoo.conf"]

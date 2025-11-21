@@ -1,37 +1,33 @@
 #!/bin/bash
 set -e
 
-echo "=========================================="
-echo "🔍 PostgreSQL Connection Diagnostics"
-echo "=========================================="
+echo "Starting Faris Jewelry Odoo - COMPLETE RESET"
+echo "Database: ${PGDATABASE}"
 
-echo "1. Testing network connectivity..."
-ping -c 2 dpg-cnufmnt109ks73bdjj80-a.oregon-postgres.render.com || echo "Ping failed"
+sleep 10
 
-echo "2. Testing port connectivity..."
-nc -zv dpg-cnufmnt109ks73bdjj80-a.oregon-postgres.render.com 5432 || echo "Port test failed"
+# Drop and recreate the database for clean start
+echo "Resetting database..."
+PGPASSWORD="${PGPASSWORD}" dropdb -h "${PGHOST}" -p "${PGPORT}" -U "${PGUSER}" "${PGDATABASE}" || echo "Database might not exist yet"
 
-echo "3. Testing PostgreSQL connection with detailed error..."
-PGPASSWORD="${DB_PASSWORD}" psql \
-    "host=dpg-cnufmnt109ks73bdjj80-a.oregon-postgres.render.com \
-     port=5432 \
-     user=faris_jewelry_odoodb_omgw_user \
-     password=${DB_PASSWORD} \
-     dbname=faris_jewelry_odoodb_omgw \
-     sslmode=prefer" \
-    -c "SELECT version();"
+PGPASSWORD="${PGPASSWORD}" createdb -h "${PGHOST}" -p "${PGPORT}" -U "${PGUSER}" "${PGDATABASE}"
 
-echo "=========================================="
-echo "🚀 Starting Odoo 18 with default settings"
-echo "=========================================="
-
-# Try starting Odoo with command-line parameters
-/usr/bin/odoo \
-    --db_host=dpg-cnufmnt109ks73bdjj80-a.oregon-postgres.render.com \
-    --db_port=5432 \
-    --db_user=faris_jewelry_odoodb_omgw_user \
-    --db_password=${DB_PASSWORD} \
-    --database=faris_jewelry_odoodb_omgw \
-    --http-port=10000 \
+echo "Initializing Odoo with base modules..."
+python odoo-bin -c odoo.conf \
+    --database="${PGDATABASE}" \
+    --db_host="${PGHOST}" \
+    --db_port="${PGPORT}" \
+    --db_user="${PGUSER}" \
+    --db_password="${PGPASSWORD}" \
+    --init=base \
     --without-demo=all \
-    --proxy-mode
+    --stop-after-init
+
+echo "Starting Odoo server..."
+exec python odoo-bin -c odoo.conf \
+    --database="${PGDATABASE}" \
+    --db_host="${PGHOST}" \
+    --db_port="${PGPORT}" \
+    --db_user="${PGUSER}" \
+    --db_password="${PGPASSWORD}" \
+    --without-demo=all
