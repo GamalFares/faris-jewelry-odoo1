@@ -1,12 +1,11 @@
 FROM odoo:17.0
 
-# Install environment substitution tool
+# Install PostgreSQL client for testing
 USER root
-RUN apt-get update && apt-get install -y gettext-base
+RUN apt-get update && apt-get install -y postgresql-client
 USER odoo
 
-# Copy configuration
-COPY odoo.conf /etc/odoo/
+COPY start.sh /app/
+RUN chmod +x /app/start.sh
 
-# Start Odoo with environment variable substitution
-CMD ["sh", "-c", "envsubst < /etc/odoo/odoo.conf > /tmp/odoo.conf && /usr/bin/odoo --config=/tmp/odoo.conf"]
+CMD ["/app/start.sh"]
