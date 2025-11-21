@@ -2,68 +2,36 @@
 set -e
 
 echo "=========================================="
-echo "🔍 Testing PostgreSQL Connection"
+echo "🔍 PostgreSQL Connection Diagnostics"
 echo "=========================================="
 
-# Test if we can connect to PostgreSQL at all
-echo "Testing connection to PostgreSQL..."
-if PGPASSWORD="${DB_PASSWORD}" psql \
+echo "1. Testing network connectivity..."
+ping -c 2 dpg-cnufmnt109ks73bdjj80-a.oregon-postgres.render.com || echo "Ping failed"
+
+echo "2. Testing port connectivity..."
+nc -zv dpg-cnufmnt109ks73bdjj80-a.oregon-postgres.render.com 5432 || echo "Port test failed"
+
+echo "3. Testing PostgreSQL connection with detailed error..."
+PGPASSWORD="${DB_PASSWORD}" psql \
     "host=dpg-cnufmnt109ks73bdjj80-a.oregon-postgres.render.com \
      port=5432 \
      user=faris_jewelry_odoodb_omgw_user \
      password=${DB_PASSWORD} \
      dbname=faris_jewelry_odoodb_omgw \
-     sslmode=disable" \
-    -c "SELECT 1;" 2>/dev/null; then
-    echo "✅ SUCCESS: Can connect WITHOUT SSL"
-    echo "Starting Odoo with SSL disabled..."
-    SSL_MODE="disable"
-else
-    echo "❌ FAILED: Cannot connect without SSL"
-    echo "Trying with SSL..."
-    if PGPASSWORD="${DB_PASSWORD}" psql \
-        "host=dpg-cnufmnt109ks73bdjj80-a.oregon-postgres.render.com \
-         port=5432 \
-         user=faris_jewelry_odoodb_omgw_user \
-         password=${DB_PASSWORD} \
-         dbname=faris_jewelry_odoodb_omgw \
-         sslmode=require" \
-        -c "SELECT 1;" 2>/dev/null; then
-        echo "✅ SUCCESS: Can connect WITH SSL"
-        SSL_MODE="require"
-    else
-        echo "❌ CRITICAL: Cannot connect with or without SSL"
-        echo "Please check:"
-        echo "1. Database is running in Render"
-        echo "2. Password is correct"
-        echo "3. Hostname is correct"
-        exit 1
-    fi
-fi
+     sslmode=prefer" \
+    -c "SELECT version();"
 
 echo "=========================================="
-echo "🚀 Starting Odoo with SSL mode: ${SSL_MODE}"
+echo "🚀 Starting Odoo 18 with default settings"
 echo "=========================================="
 
-# Create configuration based on test results
-cat > /tmp/odoo.conf << EOF
-[options]
-addons_path = /usr/lib/python3/dist-packages/odoo/addons
-data_dir = /var/lib/odoo
-admin_passwd = admin
-db_host = dpg-cnufmnt109ks73bdjj80-a.oregon-postgres.render.com
-db_port = 5432
-db_user = faris_jewelry_odoodb_omgw_user
-db_password = ${DB_PASSWORD}
-db_name = faris_jewelry_odoodb_omgw
-without_demo = all
-http_port = 10000
-proxy_mode = True
-db_sslmode = ${SSL_MODE}
-workers = 1
-list_db = False
-EOF
-
-# Start Odoo
-echo "Starting Odoo server..."
-exec /usr/bin/odoo --config=/tmp/odoo.conf
+# Try starting Odoo with command-line parameters
+/usr/bin/odoo \
+    --db_host=dpg-cnufmnt109ks73bdjj80-a.oregon-postgres.render.com \
+    --db_port=5432 \
+    --db_user=faris_jewelry_odoodb_omgw_user \
+    --db_password=${DB_PASSWORD} \
+    --database=faris_jewelry_odoodb_omgw \
+    --http-port=10000 \
+    --without-demo=all \
+    --proxy-mode
